@@ -20,7 +20,8 @@ project "AutoResolution"
     }
 
     files { 
-        "src/main.cpp",  
+        "src/main.cpp", 
+        "src/settings.cpp", 
     }
 
     includedirs { "src/",

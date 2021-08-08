@@ -1,30 +1,55 @@
 
-#include <cstdint> 
-#include <Windows.h>
+#include <stdint.h> 
+#include <string.h>
+#include <iostream>
 
+#include <windows.h>
 
-static DEVMODEA DefaultSettings;
+#include "settings.h"
 
-static void ResolutionChange(uint32_t width, uint32_t height, uint32_t frequency)
+static DEVMODEW DefaultSettings;
+
+static void ResolutionChange(const resolution& res)
 {
-    DEVMODEA newSettings = DefaultSettings;
+    DEVMODEW newSettings = DefaultSettings;
 
-    newSettings.dmPelsWidth = width;
-    newSettings.dmPelsHeight = height;
-    newSettings.dmDisplayFrequency = frequency;
+    newSettings.dmPelsWidth = res.width;
+    newSettings.dmPelsHeight = res.height;
+    newSettings.dmDisplayFrequency = res.frequency;
+
+    std::cout << "Setting " << res.width << 'x' << res.height << '@' << res.frequency << std::endl; 
     
-    ChangeDisplaySettingsA(&newSettings, 0);
+    ChangeDisplaySettingsW(&newSettings, 0);
 }
 
 int main(void)
 {
-    EnumDisplaySettingsA(NULL, ENUM_CURRENT_SETTINGS, &DefaultSettings);
+    DefaultSettings.dmSize = sizeof(DefaultSettings);
+    EnumDisplaySettingsW(NULL, ENUM_CURRENT_SETTINGS, &DefaultSettings);
 
-    ResolutionChange(DefaultSettings.dmPelsWidth, DefaultSettings.dmPelsHeight, 120);
+    settings s(DefaultSettings);
+    s.readJson("autores.json");
+    resolution default_res = s.getDefaultResolution();
 
-    Sleep(10000);
-    
-    ResolutionChange(DefaultSettings.dmPelsWidth, DefaultSettings.dmPelsHeight, DefaultSettings.dmDisplayFrequency);
+    while(true)
+    {
+        ResolutionChange(default_res);
+
+        const program* pRunning;
+        while((pRunning = s.getCurrent()) == NULL)
+            Sleep(1000);
+
+        const resolution& res = pRunning->getResolution();
+
+        std::cout << pRunning->getName()<< " running\n";
+
+        ResolutionChange(res);
+
+        while(pRunning->isRunning())
+            Sleep(1000);
+
+        std::cout << pRunning->getName()<< " quit\n";
+    }
 
     return 0;
 }
