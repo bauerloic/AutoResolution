@@ -1,0 +1,5 @@
+*.make
+Makefile
+build/*
+.vscode/*
+AutoResolution.exe
