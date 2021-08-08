@@ -24,6 +24,11 @@ static void ResolutionChange(const resolution& res)
 
 int main(void)
 {
+    if (AttachConsole(-1)){        
+        FILE* pCout;
+        freopen_s(&pCout, "CONOUT$", "w", stdout);
+    }
+
     DefaultSettings.dmSize = sizeof(DefaultSettings);
     EnumDisplaySettingsW(NULL, ENUM_CURRENT_SETTINGS, &DefaultSettings);
 

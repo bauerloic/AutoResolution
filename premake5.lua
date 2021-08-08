@@ -3,7 +3,7 @@ workspace "AutoResolution"
     configurations { "Debug" }
 
 project "AutoResolution"
-    kind "ConsoleApp"
+    kind "WindowedApp"
     language "C++"
     location "%{wks.location}"
     targetdir "%{wks.location}"
