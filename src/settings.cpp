@@ -1,8 +1,18 @@
-#include "settings.h"
 
+#include <fstream> 
+#include <iostream>
+
+#include <windows.h>
 #include <tlhelp32.h>
 
+#include "settings.h"
+
+#include <json/json.h>
+
+
+
 static bool IsProcessRunning(const char *processName);
+static void setResolution(resolution&, uint32_t width, uint32_t height, uint32_t frequency);
 
 settings::settings(const DEVMODEW& currentSettings)
 {
@@ -15,7 +25,54 @@ void settings::readJson(const char* filename)
 {
     programs.clear();
 
+    // open the file
+    std::ifstream file;
+    file.open(filename);
 
+    if (!file.is_open())
+    {
+        std::cout << "Could not open " << filename<< std::endl;
+        return;
+    }
+
+    std::cout << "Parsing " << filename<< std::endl;
+    
+    // parse the json
+    Json::Value j_root;
+    file >> j_root;
+
+    uint32_t width = j_root.get("width", "0").asUInt();
+    uint32_t height = j_root.get("height", "0").asUInt();
+    uint32_t frequency = j_root.get("frequency", "0").asUInt();
+
+    std::cout << "Default settings:\n"; 
+
+    setResolution(base, width, height, frequency);
+
+    std::cout << std::endl;
+
+
+    const Json::Value j_programs = j_root["programs"];
+    
+    for ( uint32_t i = 0; i < j_programs.size(); i++ ) {
+
+        std::string name = j_programs[i].get("name", "null").asString();
+
+        if (name != "null"){
+            resolution new_res = base;
+            std::cout << name << ":\n"; 
+            
+            width = j_programs[i].get("width", "0").asUInt();
+            height = j_programs[i].get("height", "0").asUInt();
+            frequency = j_programs[i].get("frequency", "0").asUInt();
+
+            setResolution(new_res, width, height, frequency);
+
+            std::cout << std::endl;
+            program new_program(name.c_str(), new_res);
+            programs.push_back(new_program);
+        }
+    }
 }
 
 
@@ -37,7 +94,21 @@ bool program::isRunning(void) const
 }
 
 
-
+static void setResolution(resolution& res, uint32_t width, uint32_t height, uint32_t frequency)
+{
+    if (width) {
+        res.width = width;
+        std::cout << "\tWidth : "<< width<<std::endl;
+    }
+    if (height) {
+        res.height = height;
+        std::cout << "\tHeight : "<< height<<std::endl;
+    }
+    if (frequency) {
+        res.frequency = frequency;
+        std::cout << "\tFrequency : "<< frequency<<std::endl;
+    }
+}
 
 
 

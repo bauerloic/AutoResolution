@@ -32,8 +32,9 @@ project "AutoResolution"
     }
 
     linkoptions {
-        "-lUser32"
+        "-lUser32 -lKernel32 -static-libstdc++ -static-libgcc -static -lpthread"
     }
 
     links {
+        "jsoncpp"
     }

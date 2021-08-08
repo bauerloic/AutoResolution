@@ -17,7 +17,7 @@ static void ResolutionChange(const resolution& res)
     newSettings.dmPelsHeight = res.height;
     newSettings.dmDisplayFrequency = res.frequency;
 
-    std::cout << "Setting " << res.width << 'x' << res.height << '@' << res.frequency << std::endl; 
+    std::cout << "Setting " << res.width << 'x' << res.height << '@' << res.frequency << std::endl<< std::endl; 
     
     ChangeDisplaySettingsW(&newSettings, 0);
 }
@@ -37,7 +37,7 @@ int main(void)
 
         const program* pRunning;
         while((pRunning = s.getCurrent()) == NULL)
-            Sleep(1000);
+            SleepEx(1000, FALSE);
 
         const resolution& res = pRunning->getResolution();
 
@@ -46,7 +46,7 @@ int main(void)
         ResolutionChange(res);
 
         while(pRunning->isRunning())
-            Sleep(1000);
+            SleepEx(1000, FALSE);
 
         std::cout << pRunning->getName()<< " quit\n";
     }
