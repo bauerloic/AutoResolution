@@ -19,7 +19,7 @@ static void ResolutionChange(const resolution& res)
 
     std::cout << "Setting " << res.width << 'x' << res.height << '@' << res.frequency << std::endl<< std::endl; 
     
-    ChangeDisplaySettingsW(&newSettings, 0);
+    ChangeDisplaySettingsW(&newSettings, CDS_UPDATEREGISTRY);
 }
 
 int main(void)
