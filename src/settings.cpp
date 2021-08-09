@@ -41,9 +41,9 @@ void settings::readJson(const char* filename)
     Json::Value j_root;
     file >> j_root;
 
-    uint32_t width = j_root.get("width", "0").asUInt();
-    uint32_t height = j_root.get("height", "0").asUInt();
-    uint32_t frequency = j_root.get("frequency", "0").asUInt();
+    uint32_t width = j_root.get("width", 0).asUInt();
+    uint32_t height = j_root.get("height", 0).asUInt();
+    uint32_t frequency = j_root.get("frequency", 0).asUInt();
 
     std::cout << "Default settings:\n"; 
 
@@ -62,9 +62,9 @@ void settings::readJson(const char* filename)
             resolution new_res = base;
             std::cout << name << ":\n"; 
             
-            width = j_programs[i].get("width", "0").asUInt();
-            height = j_programs[i].get("height", "0").asUInt();
-            frequency = j_programs[i].get("frequency", "0").asUInt();
+            width = j_programs[i].get("width", 0).asUInt();
+            height = j_programs[i].get("height", 0).asUInt();
+            frequency = j_programs[i].get("frequency", 0).asUInt();
 
             setResolution(new_res, width, height, frequency);
 
